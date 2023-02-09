@@ -1,0 +1,39 @@
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  binaryTargets   = "native"
+  previewFeatures = ["clientExtensions"]
+}
+
+enum BodyStyle {
+  Convertible
+  Coupe
+  Crossover
+  Electric
+  Hatchback
+  Hybrid
+  Minivan
+  Other
+  Pickup
+  Sedan
+  SUV
+  Truck
+  Van
+  Van_Minivan
+  Wagon
+}
+
+model Car {
+  id         Int         @id @default(autoincrement())
+  year       Int
+  make       String
+  model      String
+  bodyStyles BodyStyle[]
+  ownerId    String?
+
+  @@unique([year, make, model])
+}
