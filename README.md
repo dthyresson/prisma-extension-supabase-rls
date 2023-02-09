@@ -8,14 +8,18 @@ Policies are PostgreSQL's rule engine. They are incredibly powerful and flexible
 
 ## Use
 
+### Prisma Client with Supabase RLS Enforced
+
 ```ts
-const unauthenticatedPrismaClient = new PrismaClient({
+const prisma = new PrismaClient({
   datasources: { db: { url: process.env.RLS_DATABASE_URL } },
 }).$extends(useSupabaseRowLevelSecurity())
 ```
 
+### Prisma Client with Supabase RLS Enforced and Claims Function
+
 ```ts
-const authenticatedDb = new PrismaClient({
+const prisma = new PrismaClient({
   datasources: { db: { url: process.env.RLS_DATABASE_URL } },
 }).$extends(
   useSupabaseRowLevelSecurity({
@@ -27,9 +31,10 @@ const authenticatedDb = new PrismaClient({
   })
 )
 ```
+### Prisma Client with Supabase RLS Enforced with Claims from Context and Custom Error
 
 ```ts
-const authenticatedDb = new PrismaClient({
+const prisma = new PrismaClient({
   datasources: { db: { url: process.env.RLS_DATABASE_URL } },
 }).$extends(
   useSupabaseRowLevelSecurity({  
