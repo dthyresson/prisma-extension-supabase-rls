@@ -1,39 +1,106 @@
-datasource db {
-  provider = "postgres"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider        = "prisma-client-js"
-  binaryTargets   = "native"
   previewFeatures = ["clientExtensions"]
+  binaryTargets   = ["native"]
 }
 
-enum BodyStyle {
-  Convertible
-  Coupe
-  Crossover
-  Electric
-  Hatchback
-  Hybrid
-  Minivan
-  Other
-  Pickup
-  Sedan
-  SUV
-  Truck
-  Van
-  Van_Minivan
-  Wagon
+datasource db {
+  provider  = "postgres"
+  url       = env("RLS_DATABASE_URL")
+  directUrl = env("DATABASE_URL")
 }
 
-model Car {
-  id         Int         @id @default(autoincrement())
-  year       Int
-  make       String
+model DrumMachine {
+  id         Int        @id @default(autoincrement())
+  name       String
+  brand      String
   model      String
-  bodyStyles BodyStyle[]
-  ownerId    String?
+  decade     Decade
+  signalType SignalType
 
-  @@unique([year, make, model])
+  @@unique([name, brand, model])
+}
+
+model Synthesizer {
+  id         Int        @id @default(autoincrement())
+  name       String
+  brand      String
+  model      String
+  decade     Decade
+  formFactor FormFactor
+
+  @@unique([name, brand, model])
+}
+
+model Pedal {
+  id     Int    @id @default(autoincrement())
+  name   String
+  brand  String
+  model  String
+  decade Decade
+  effect Effect
+
+  @@unique([name, brand, model])
+}
+
+model Mixer {
+  id       Int    @id @default(autoincrement())
+  name     String
+  brand    String
+  model    String
+  decade   Decade
+  channels Int
+
+  @@unique([name, brand, model])
+}
+
+enum Decade {
+  YEAR_1960
+  YEAR_1970
+  YEAR_1980
+  YEAR_1990
+  YEAR_2000
+  YEAR_2010
+  YEAR_2020
+}
+
+enum FormFactor {
+  RACK
+  KEYBOARD
+  DESKTOP
+  EURO_RACK
+  MODULAR
+}
+
+enum SignalType {
+  ANALOG
+  DIGITAL
+}
+
+enum Effect {
+  ARPEGGIATOR
+  BIT_CRUSHER
+  CHORUS
+  COMPRESSOR
+  DELAY
+  DISTORTION
+  EQ
+  FILTER
+  FLANGER
+  FUZZ
+  LOOPER
+  OCTAVER
+  OVERDRIVE
+  PHASER
+  PITCH_SHIFTER
+  REVERB
+  RING_MODULATOR
+  SAMPLER
+  SEQUENCER
+  SLICER
+  TREMOLO
+  VIBRATO
+  VOCAL_PROCESSOR
+  WAH
+  OTHER
 }

@@ -50,14 +50,20 @@ export interface SupabaseRowLevelSecurityOptions {
    * The error to throw when the policy check fails.
    */
   policyError?: Error
+  /**
+   * Log errors to the console.
+   * @default false
+   */
+  logging?: boolean
 }
 
 const defaultSupabaseRowLevelSecurityOptions: SupabaseRowLevelSecurityOptions =
   {
-    //   name = 'useSupabaseRowLevelSecurity',
+    name: 'useSupabaseRowLevelSecurity',
     claimsSetting: 'request.jwt.claims',
     claimsFn: undefined,
     policyError: new Error('Not authorized.'),
+    logging: false,
   }
 
 export const useSupabaseRowLevelSecurity = (
@@ -87,7 +93,8 @@ export const useSupabaseRowLevelSecurity = (
 
               return result
             } catch (e) {
-              throw policyError
+              if (options.logging) console.error(e)
+              throw policyError || e
             }
           },
         },

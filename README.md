@@ -55,13 +55,69 @@ const prisma = new PrismaClient({
 1. Create Postgres Database
 1. yarn install
 1. Setup .env with database connections
-1. npx primsa migrate dev
+1. yarn prisma:migrate
 
 See [prisma/migrations/20230208161945_rls/migration.sql](prisma/migrations/20230208161945_rls/migration.sql)
 ## Testing
 
-
 1. yarn test
+
+## Helpful SQL Tips
+
+### When Creating New Users
+
+Wth Prisma, the role needs to be able to login. Therefore you should create the role with the `CREATE USER` command or be sure to grant them login permission if using `CREATE ROLE`:
+
+```sql
+-- while create user is an alias for role, user add login access
+CREATE USER rls_user WITH PASSWORD 'password';
+```
+
+With a new user, they still need certain permissions to be able to access the database:
+
+```sql
+-- need usage of the public schema
+GRANT USAGE ON SCHEMA public to rls_user;
+-- need access to sequences for creates
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public to rls_user;
+-- need access to tables
+GRANT ALL ON ALL TABLES IN SCHEMA public TO rls_user;
+```
+
+You will then enable RLS on all tables:
+
+```sql
+-- Enable RLS on all table
+ALTER TABLE "public"."DrumMachine" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."Mixer" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."Pedal" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."Synthesizer" ENABLE ROW LEVEL SECURITY;
+```
+
+And then add policies for SELECT, UPDATE, INSERT, DELETE as needed.
+
+```sql
+-- Create a policy to give allow authenticated users permissions
+CREATE POLICY "Authenticated users can modify Pedals" ON "public"."Pedal"
+AS PERMISSIVE FOR UPDATE
+TO rls_user
+USING (auth.jwt() ->> 'role' = 'authenticated')
+WITH CHECK (auth.jwt() ->> 'role' = 'authenticated');
+
+-- Prisma needs to select after an update
+CREATE POLICY "Authenticated users can select Pedals" ON "public"."Pedal"
+AS PERMISSIVE FOR SELECT
+TO rls_user
+USING (auth.jwt() ->> 'role' = 'authenticated');
+```
+
+Note that for Prisma, UPDATES, INSERTS and DELETES will need SELECT permission as well to behave as expected.
+
+### View ALl Policies
+
+```sql
+SELECT rolname, * FROM pg_roles;
+```
 
 ## Contributing
 

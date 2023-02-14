@@ -1,0 +1,6 @@
+-- Enable RLS on all table
+ALTER TABLE "public"."DrumMachine" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."Mixer" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."Pedal" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."Synthesizer" ENABLE ROW LEVEL SECURITY;
+
